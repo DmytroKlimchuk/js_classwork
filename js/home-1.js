@@ -4,14 +4,14 @@
 
 
 // КУРСИ ВАЛЮТ
-var EXCHANGE_USD = 28.5005;
-var EXCHANGE_EUR = 34.6283;
-var EXCHANGE_RUB = 0.4404;
+const EXCHANGE_USD = 28.5005;
+const EXCHANGE_EUR = 34.6283;
+const EXCHANGE_RUB = 0.4404;
 
 // Наявна сума у обміннику
-var aviable_USD = 500;
-var aviable_EUR = 1000;
-var aviable_RUB = 2000;
+const aviable_USD = 500;
+const aviable_EUR = 1000;
+const aviable_RUB = 2000;
 
 var money_USD = 0;
 var money_EUR = 0;
