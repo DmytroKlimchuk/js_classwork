@@ -49,7 +49,7 @@ while (score_1 < n && score_2 < n) {
 
     if ( (player1_n1 + player1_n2) > (player2_n1 + player2_n2)) {
         score_1 ++;
-    } else {
+    } else if ( (player1_n1 + player1_n2) < (player2_n1 + player2_n2)) {
         score_2 ++;
     }
 
