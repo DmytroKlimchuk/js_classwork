@@ -6,8 +6,6 @@
 
 function shake() {
     return Math.floor(Math.random() * 6);
-    return Math.random() * 6;
-
 }
 
 function compare(n1, n2) {
@@ -23,7 +21,7 @@ function log(text) {
     document.write(text + "<br>");
 }
 
-var n = 11;
+var n = Number(prompt("Введіть максимальну кількість балів для завершення гри"));
 
 var score_1 = 0,
     score_2 = 0,
@@ -51,7 +49,7 @@ while (score_1 < n && score_2 < n) {
 
     if ( (player1_n1 + player1_n2) > (player2_n1 + player2_n2)) {
         score_1 ++;
-    } else {
+    } else if ( (player1_n1 + player1_n2) < (player2_n1 + player2_n2)) {
         score_2 ++;
     }
 
