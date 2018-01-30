@@ -35,6 +35,7 @@ function calculate(data) {
 
     // Вартість затраченого палива
     var cost = data.distance * data.fuel * data.price;
+    cost = Math.ceil(cost*100)/100;
     massage('Вартість затраченого палива - ' + cost + ' грн.');
 
 }
