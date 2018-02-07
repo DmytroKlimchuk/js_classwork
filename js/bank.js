@@ -13,6 +13,13 @@ function log(txt) {
     console.log(txt);
 }
 
+var aviableCurrency = {
+    "USD": 1000,
+    "EUR": 1000,
+    "RUR": 1000,
+    "UAH": 20000
+};
+
 function random(min, max) {
     var rand = min - 0.5 + Math.random() * (max - min + 1)
     rand = Math.round(rand);
@@ -118,8 +125,100 @@ var Account = {
         }
 
     },
-    menu : function () {
-        var action = Number(prompt("Виберіть, яку операцію ви хочете здійснити? 1 - створити рахунок, 2 - поповнити рахунок, 3 - зняти кошти, 4 - завершити роботу"));
+    initCurrency : function () {
+
+        var xhr = new XMLHttpRequest();
+        var path = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5";
+        xhr.open('GET', path, false);
+        xhr.send();
+        if (xhr.status != 200) {
+            alert( xhr.status + ': ' + xhr.statusText );
+        } else {
+            //document.write( xhr.responseText + "<br>");
+            return JSON.parse(xhr.responseText);
+        }
+
+    },
+    exchange : function () {
+
+        var currency = this.initCurrency();
+        var action = Number(prompt("Виберіть, яку операцію ви хочете здійснити? 1 - купити валюту, 2 - продати валюту"));
+
+        switch (action) {
+            case 1:
+                log('Купуємо валюту');
+                this.buyCurrency(currency);
+                break;
+            case 2:
+                log('Продаємо валюту');
+                this.saleCurrency(currency);
+                break;
+            default :
+                log('Операція недоступна.');
+                alert('Операція недоступна!');
+                break;
+        }
+
+    },
+    buyCurrency : function (currency) {
+      //покупка
+        var str = '';
+        for(key in currency) {
+            str += key + ' - ' + currency[key].ccy + ', ';
+        }
+        var action = Number(prompt("Виберіть яку валюту ви бажаєте купити: " + str));
+        var money = Number(prompt("Введіть суму"));
+
+        if (this.checkAviability(currency[action].ccy, money)) {
+
+            var money2 = money * currency[action].sale;
+
+            aviableCurrency[currency[action].ccy] -= money;
+            aviableCurrency[currency[action].base_ccy] += money2;
+
+            log('Операція здійснена успішно: ' + money+currency[action].ccy + " => " + money2+currency[action].base_ccy);
+            log('Курс обміну: ' + currency[action].sale +currency[action].base_ccy);
+            log('Залишок в обміннику: ' + aviableCurrency[currency[action].ccy]+currency[action].ccy);
+            log('Залишок в обміннику: ' + aviableCurrency[currency[action].base_ccy]+currency[action].base_ccy);
+
+            alert('Операція здійснена успішно: ' + money+currency[action].ccy + " => " + money2+currency[action].base_ccy);
+        }
+    },
+    saleCurrency : function (currency) {
+        //продажа
+        var str = '';
+        for(key in currency) {
+            str += key + ' - ' + currency[key].ccy + ', ';
+        }
+        var action = Number(prompt("Виберіть яку валюту ви бажаєте продати: " + str));
+        var money = Number(prompt("Введіть суму"));
+        var money2 = money * currency[action].buy;
+
+        if (this.checkAviability(currency[action].base_ccy, money2)) {
+
+            aviableCurrency[currency[action].ccy] += money;
+            aviableCurrency[currency[action].base_ccy] -= money2;
+
+            log('Операція здійснена успішно: ' + money+currency[action].base_ccy + " => " + money2+currency[action].ccy);
+            log('Курс обміну: ' + currency[action].buy +currency[action].base_ccy);
+            log('Залишок в обміннику: ' + aviableCurrency[currency[action].ccy]+currency[action].ccy);
+            log('Залишок в обміннику: ' + aviableCurrency[currency[action].base_ccy]+currency[action].base_ccy);
+
+            alert('Операція здійснена успішно: ' + money2+currency[action].base_ccy + " => " + money+currency[action].ccy);
+        }
+    },
+    checkAviability : function (value, money) {
+        if (aviableCurrency[value] >= money) {
+            log(value + ' - в обміннику достатня кількість для обміну');
+            return true;
+        } else {
+            log(value + ' - в обміннику недостатня кількість для обміну');
+            alert(value + ' - в обміннику недостатня кількість для обміну. Спробуйте ще, вказавши меншу суму.');
+            return false;
+        }
+    },
+    menu : function() {
+        var action = Number(prompt("Виберіть, яку операцію ви хочете здійснити? 1 - створити рахунок, 2 - поповнити рахунок, 3 - зняти кошти, 4 - обміняти валюту, 5 - завершити роботу"));
 
         switch (action) {
             case 1:
@@ -134,6 +233,10 @@ var Account = {
                 Account.cashOut();
                 Account.menu();
                 break;
+            case 4:
+                Account.exchange();
+                Account.menu();
+                break;
             default:
                 log('сеанс завершено.');
                 alert('Раді були Вас бачити. Чекаємо Вас наступного разу!');
@@ -142,5 +245,23 @@ var Account = {
 
     }
 };
+
+log(aviableCurrency);
+
+
+// document.addEventListener("DOMContentLoaded", function(event) {
+//
+//     var xhr = new XMLHttpRequest();
+//     var path = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
+//     xhr.open('GET', path, false);
+//     xhr.send();
+//     if (xhr.status != 200) {
+//         alert( xhr.status + ': ' + xhr.statusText );
+//     } else {
+//         document.write( xhr.responseText + "<br>");
+//         // document.write(JSON.parse(xhr.responseText));
+//     }
+//
+// });
 
 Account.menu();
